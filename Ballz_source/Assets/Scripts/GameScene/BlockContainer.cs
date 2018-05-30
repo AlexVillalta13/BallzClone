@@ -2,25 +2,32 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlockContainer : MonoSingleton<BlockContainer>
+public class BlockContainer : MonoBehaviour
 {
     private const float DISTANCE_BETWEEN_BLOCKS = 0.34f;
+
+    private BallsController ballsController;
 
     public Transform rowContainer;
     public GameObject rowPrefab;
     private Vector2 rowContainerStartingPosition;
+    public bool rowIsMoving;
 
     private float currentSpawnY;
     private Vector2 desiredPosition;
 
     private int lastBallSpawn;
 
-    //private List<Block> blocks = new List<Block>();
+    private void Awake()
+    {
+        ballsController = FindObjectOfType<BallsController>();
+    }
 
     private void Start()
     {
         rowContainerStartingPosition = rowContainer.transform.position;
         desiredPosition = rowContainerStartingPosition;
+        GenerateNewRow();
     }
 
     private void Update()
@@ -28,6 +35,11 @@ public class BlockContainer : MonoSingleton<BlockContainer>
         if ((Vector2)rowContainer.position != desiredPosition)
         {
             rowContainer.transform.position = Vector3.MoveTowards(rowContainer.transform.position, desiredPosition, Time.deltaTime);
+        }
+
+        if (!ballsController.isBreakingStuff && (Vector2)rowContainer.position == desiredPosition)
+        {
+            rowIsMoving = false;
         }
     }
 
@@ -43,7 +55,6 @@ public class BlockContainer : MonoSingleton<BlockContainer>
         int ballSpawnIndex = -1;
         if (lastBallSpawn * 0.3f > 1f)
         {
-            // Force spawn a ball
             ballSpawnIndex = Random.Range(0, 7);
         }
 
@@ -54,16 +65,16 @@ public class BlockContainer : MonoSingleton<BlockContainer>
             {
                 bloackArray[i].SpawnBall();
                 lastBallSpawn = 0;
-                return;
+                continue;
             }
 
             if (Random.Range(0f, 1f) > 0.5f)
             {
-                bloackArray[i].Spawn();
+                bloackArray[i].SpawnBlock();
             }
             else
             {
-                bloackArray[i].Hide();
+                bloackArray[i].SpawnNothing();
             }
         }
         lastBallSpawn++;

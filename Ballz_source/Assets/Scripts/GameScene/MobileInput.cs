@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MobileInput : MonoSingleton<MobileInput>
+public class MobileInput : MonoBehaviour
 {
     public bool tap, release, hold;
     public Vector2 swipeDelta;
+    [SerializeField] private GameObject ball;
 
-    private Vector2 initialPosition;
+    //private Vector2 initialPosition;
 
     private void Update()
     {
@@ -27,7 +28,7 @@ public class MobileInput : MonoSingleton<MobileInput>
         if (hold)
         {
             //swipeDelta = (Vector2)Input.mousePosition - initialPosition;
-            swipeDelta = Camera.main.ScreenToWorldPoint(Input.mousePosition) - Ball.Instance.transform.position;
+            swipeDelta = Camera.main.ScreenToWorldPoint(Input.mousePosition) - ball.transform.position;
         }
     }
 }

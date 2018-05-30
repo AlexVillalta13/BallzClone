@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Block : MonoBehaviour
 {
@@ -8,26 +9,37 @@ public class Block : MonoBehaviour
 
     public GameObject blockObject;
     public GameObject ballObject;
+    private TextMeshPro hpText;
 
-    public void Spawn()
+    private BallsController ballsController;
+
+    private void Awake()
     {
-        int amountBalls = BallsController.Instance.amountBalls;
+        ballsController = FindObjectOfType<BallsController>();
+        hpText = GetComponent<TextMeshPro>();
+    }
+
+    public void SpawnBlock()
+    {
+        blockObject.SetActive(true);
+        int amountBalls = ballsController.amountBalls;
         hp = Random.Range(amountBalls - 3, amountBalls + 3);
         if (hp <= 0)
         {
             hp = 1;
         }
+        UpdateHpText();
     }
 
     public void SpawnBall()
     {
-        Hide();
         ballObject.SetActive(true);
+        hpText.enabled = false;
     }
 
-    public void Hide()
+    public void SpawnNothing()
     {
-        blockObject.SetActive(false);
+        Destroy(gameObject);
     }
 
     public void ReceiveHit()
@@ -37,5 +49,11 @@ public class Block : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+        UpdateHpText();
+    }
+
+    private void UpdateHpText()
+    {
+        hpText.text = hp.ToString();
     }
 }
